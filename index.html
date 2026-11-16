@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LessonSpark</title>
+<style>
+  :root {
+    --navy: #12263A;
+    --cream: #FFF7E8;
+    --amber: #FFB020;
+    --teal: #2BB6A3;
+    --ink: #0B1A28;
+    --line: #E3D9C4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--navy);
+    color: var(--cream);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .logo {
+    width: 52px; height: 52px; border-radius: 14px; background: var(--amber);
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  h1 { margin: 0; font-size: 34px; letter-spacing: -0.02em; }
+  .tag { margin: 0 0 20px; font-size: 18px; color: var(--cream); opacity: .9; }
+  .card {
+    background: var(--cream); color: var(--navy); border-radius: 20px; padding: 20px;
+    margin-bottom: 16px;
+  }
+  label { display: block; font-weight: 600; font-size: 15px; margin: 0 0 6px; color: #3C5368; }
+  input[type=text], select {
+    width: 100%; font: inherit; font-size: 18px; padding: 12px 14px;
+    border: 2px solid var(--navy); border-radius: 12px; background: #fff; color: var(--navy);
+  }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .row > div { flex: 1 1 200px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  button {
+    font: inherit; font-weight: 600; font-size: 17px; padding: 12px 18px; border: none;
+    border-radius: 12px; background: var(--navy); color: var(--cream); cursor: pointer;
+    min-height: 44px;
+  }
+  button.secondary { background: #fff; color: var(--navy); border: 2px solid var(--navy); }
+  button:disabled { opacity: .55; cursor: not-allowed; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+  .status { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; font-size: 15px; }
+  .chip { padding: 6px 12px; border-radius: 999px; background: var(--teal); color: var(--ink); font-weight: 600; }
+  .chip.off { background: #FFD9A0; }
+  #output {
+    white-space: pre-wrap; font-size: 18px; min-height: 120px;
+  }
+  #output[dir=rtl] { text-align: right; font-size: 22px; }
+  .meta { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .error { background: #FFE1DC; color: #7A1608; border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; display: none; white-space: pre-wrap; }
+  .note { font-size: 14px; opacity: .8; }
+  @media print {
+    body { background: #fff; color: #000; }
+    header, .status, #form, .meta .actions, .note { display: none !important; }
+    .card { background: #fff; color: #000; padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#12263A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></svg>
+    </div>
+    <h1>LessonSpark</h1>
+  </header>
+  <p class="tag">Turn any topic into a lesson in seconds, even offline.</p>
+
+  <div class="status" aria-live="polite">
+    <span id="deviceChip" class="chip off">Checking on-device AI...</span>
+    <span class="note" id="deviceNote"></span>
+  </div>
+
+  <div class="error" id="error" role="alert"></div>
+
+  <form class="card" id="form">
+    <div class="row">
+      <div style="flex: 2 1 280px">
+        <label for="topic">Topic</label>
+        <input type="text" id="topic" placeholder="e.g. Photosynthesis" required>
+      </div>
+      <div>
+        <label for="grade">Grade</label>
+        <select id="grade">
+          <option>1</option><option>2</option><option>3</option><option>4</option>
+          <option>5</option><option>6</option><option selected>7</option><option>8</option>
+          <option>9</option><option>10</option><option>11</option><option>12</option>
+        </select>
+      </div>
+      <div>
+        <label for="language">Language</label>
+        <select id="language">
+          <option>English</option>
+          <option>Urdu</option>
+          <option>Arabic</option>
+          <option>Hindi</option>
+          <option>Spanish</option>
+          <option>French</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" data-task="quiz">Make Quiz</button>
+      <button type="button" data-task="explain">Explain Simply</button>
+      <button type="button" data-task="worksheet">Make Worksheet</button>
+    </div>
+  </form>
+
+  <section class="card" aria-live="polite">
+    <div class="meta">
+      <strong id="resultTitle">Your lesson will appear here</strong>
+      <span class="actions">
+        <span id="sourceChip" class="chip" hidden></span>
+        <button type="button" class="secondary" id="copyBtn" disabled>Copy</button>
+        <button type="button" class="secondary" id="printBtn" disabled>Print</button>
+      </span>
+    </div>
+    <div id="output"></div>
+  </section>
+
+  <p class="note">Built for the #BuildHybridAI 2026 hackathon with Firebase AI Logic. Quiz answers are AI-generated, so please check them before using them in class.</p>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
