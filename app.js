@@ -164,7 +164,9 @@ async function generate(task) {
       deviceModelStarted = true;
       try {
         model.initializeDeviceModel((p) => {
-          out.textContent = `Downloading on-device model: ${Math.round(p * 100)}%`;
+          if (/^(Creating|Downloading)/.test(out.textContent)) {
+            out.textContent = `Downloading on-device model: ${Math.round(p * 100)}%`;
+          }
         });
       } catch (e) {
         console.warn("On-device model could not start:", e);
@@ -176,7 +178,9 @@ async function generate(task) {
 
     const src = result.response.inferenceSource;
     const chip = $("sourceChip");
-    chip.textContent = src === "ON_DEVICE" ? "Answered on-device (Gemini Nano)" : "Answered in the cloud (Gemini)";
+    const onDevice = String(src).toLowerCase().replace(/[^a-z]/g, "").includes("ondevice");
+    console.log("inferenceSource:", src);
+    chip.textContent = onDevice ? "Answered on-device (Gemini Nano)" : "Answered in the cloud (Gemini)";
     chip.hidden = false;
     $("copyBtn").disabled = false;
     $("printBtn").disabled = false;
